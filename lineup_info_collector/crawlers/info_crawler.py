@@ -37,7 +37,7 @@ def _get_info(act_name, info_url, act_url, verbose):
         tag = """id="artistName">"""
         name = str(div)[str(div).find(tag) + len(tag) : -len("</h1>")]
 
-    if act_name == name:
+    if act_name.lower() == name.lower():
         for div in soup.findAll("div", {"class": "activeDates"}):
             activeDate = str(div)[
                 str(div).find("<div>") + len("<div>") : -len("</div>\n</div>")
