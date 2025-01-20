@@ -22,8 +22,6 @@ def _find_info_url(artist):
 def _compare_names(line_up_name, info_name):
     line_up_name = unidecode(line_up_name.lower())
     info_name = unidecode(info_name.lower()).replace("&amp;", "&") #allmusic replaces & with &amp; 
-    print(line_up_name)
-    print(info_name)
     return line_up_name == info_name
 
 def _get_info(act_name, info_url, act_url, verbose):

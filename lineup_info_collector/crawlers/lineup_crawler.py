@@ -22,27 +22,26 @@ def _dtrh_crawler(params):
     return artists
 
 
-def _pinkpop_crawler(params):
-    soup = _get_soup(params["URL"])
-
-    artist_tags = soup.find_all('h3')
-    all_artists = []
-    artists = [tag.text.strip() for tag in artist_tags]
-    for artist in artists:
-        all_artists.append(artist)
-
+def _check_if_urls_exists(soup, artists):
     all_urls = []
     for div in soup.findAll('a'):
         all_urls.append(div.attrs["href"])
 
-    artists = []
-    for artist in all_artists:
-        new_url = "https://www.pinkpop.nl/line-up/" + artist.lower().replace(' ', '-') + "/"
-        if new_url in all_urls:
-            artists.append({"name": artist, "link": new_url})
-            print("added", artist)
-        else:
+    for pair in artists:
+        new_url = pair["link"]
+        if not new_url in all_urls:
             print(new_url, "does not exist!")
+
+def _pinkpop_crawler(params):
+    soup = _get_soup(params["URL"])
+    artist_tags = soup.find_all('h3')
+    artists = []
+    s_artists = [tag.text.strip() for tag in artist_tags]
+    for artist in s_artists:
+        new_url = "https://www.pinkpop.nl/line-up/" + artist.lower().replace(' ', '-') + "/"
+        artists.append({"name": artist, "link": new_url})
+
+    _check_if_urls_exists(soup, artists)
     return artists
 
 
