@@ -1,5 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
+from unidecode import unidecode
+
 
 from lineup_info_collector import constants
 
@@ -17,6 +19,12 @@ def _find_info_url(artist):
         url = url[: url.find("""\"""")]
         return url
 
+def _compare_names(line_up_name, info_name):
+    line_up_name = unidecode(line_up_name.lower())
+    info_name = unidecode(info_name.lower()).replace("&amp;", "&") #allmusic replaces & with &amp; 
+    print(line_up_name)
+    print(info_name)
+    return line_up_name == info_name
 
 def _get_info(act_name, info_url, act_url, verbose):
     try:
@@ -37,7 +45,7 @@ def _get_info(act_name, info_url, act_url, verbose):
         tag = """id="artistName">"""
         name = str(div)[str(div).find(tag) + len(tag) : -len("</h1>")]
 
-    if act_name.lower() == name.lower():
+    if _compare_names(act_name, name):
         for div in soup.findAll("div", {"class": "activeDates"}):
             activeDate = str(div)[
                 str(div).find("<div>") + len("<div>") : -len("</div>\n</div>")
