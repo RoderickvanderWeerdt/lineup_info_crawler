@@ -1,0 +1,11 @@
+FESTIVAL: "DTRH"
+YEAR: 2025
+URL: "https://downtherabbithole.nl/programma"
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - act_url
+  - info_url
