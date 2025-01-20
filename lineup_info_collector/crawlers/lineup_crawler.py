@@ -22,6 +22,30 @@ def _dtrh_crawler(params):
     return artists
 
 
+def _pinkpop_crawler(params):
+    soup = _get_soup(params["URL"])
+
+    artist_tags = soup.find_all('h3')
+    all_artists = []
+    artists = [tag.text.strip() for tag in artist_tags]
+    for artist in artists:
+        all_artists.append(artist)
+
+    all_urls = []
+    for div in soup.findAll('a'):
+        all_urls.append(div.attrs["href"])
+
+    artists = []
+    for artist in all_artists:
+        new_url = "https://www.pinkpop.nl/line-up/" + artist.lower().replace(' ', '-') + "/"
+        if new_url in all_urls:
+            artists.append({"name": artist, "link": new_url})
+            print("added", artist)
+        else:
+            print(new_url, "does not exist!")
+    return artists
+
+
 def _lowlands_crawler(params):
     soup = _get_soup(params["URL"])
 
@@ -36,6 +60,8 @@ def lineup_crawler(params):
         return _dtrh_crawler(params)
     elif params["FESTIVAL"] == "lowlands":
         return _lowlands_crawler(params)
+    elif params["FESTIVAL"] == "pinkpop":
+        return _pinkpop_crawler(params)
     else:
         exit(
             f"unknown festival {params['FESTIVAL']}. Currently accepted are: ['DTRH', 'lowlands']"

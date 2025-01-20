@@ -1,0 +1,11 @@
+FESTIVAL: "pinkpop"
+YEAR: 2025
+URL: 'https://www.pinkpop.nl/line-up'
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - act_url
+  - info_url
