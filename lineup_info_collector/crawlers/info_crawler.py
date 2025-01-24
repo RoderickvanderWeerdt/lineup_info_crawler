@@ -25,6 +25,16 @@ def _compare_names(line_up_name, info_name):
     return line_up_name == info_name
 
 def _get_info(act_name, info_url, act_url, verbose):
+    if info_url==None:
+        print(f"INFO: unable to get response from {info_url}, for {act_name}")
+        return  {
+        "name": act_name,
+        "activeDate": ";",
+        "genres": ";",
+        "styles": ";",
+        "act_url": act_url,
+        "info_url": ";"
+        }
     try:
         source_code = requests.get(info_url, headers=constants.HEADERS)
     except requests.exceptions.RequestException as e:  # This is the correct syntax

@@ -32,10 +32,12 @@ def _export_to_csv(params, all_artist_info):
     file_name = f"{params['FESTIVAL']}_{params['YEAR']}.csv"
     filled_acts = []
     if os.path.exists(file_name):
-        f = open(file_name, "+a")
+        f = open(file_name, "r")
         for line in f.readlines():
             cols = line.split(",")
             filled_acts.append(cols[0])
+        f.close()
+        f = open(file_name, "+a")
     else:
         f = open(file_name, "w")
 
