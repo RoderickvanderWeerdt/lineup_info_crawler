@@ -84,5 +84,5 @@ def info_crawler(artists, verbose):
     all_info = []
     for artist in artists:
         info_url = _find_info_url(artist["name"])
-        all_info.append(_get_info(artist["name"], info_url, artist["link"], verbose))
+        all_info.append(artist|_get_info(artist["name"], info_url, artist["link"], verbose))
     return all_info

@@ -7,5 +7,6 @@ COLUMNS:
   - genres
   - styles
   - activeDate
+  - day
   - act_url
   - info_url

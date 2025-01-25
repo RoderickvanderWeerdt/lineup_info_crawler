@@ -26,7 +26,8 @@ def _pinkpop_crawler(params):
     artists = []
     for div in soup.findAll("a", {"data-day": ["friday", "saturday", "sunday"]}):
         artist_name = ' '.join(div.text.strip().split(' ')[:-3]) #remove day from name
-        artists.append({"name": artist_name, "link": div.attrs["href"]})
+        artist_day = div.text.strip().split(' ')[-3]
+        artists.append({"name": artist_name, "link": div.attrs["href"], "day": artist_day})
     return artists
 
 def _ooto_crawler(params):
