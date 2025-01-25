@@ -1,0 +1,11 @@
+FESTIVAL: "ooto"
+YEAR: 2025
+URL: 'https://outoftheordinary-festival.nl/programma/'
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - act_url
+  - info_url

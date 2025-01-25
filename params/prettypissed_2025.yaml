@@ -1,0 +1,11 @@
+FESTIVAL: "prettypissed"
+YEAR: 2025
+URL: 'https://www.melkweg.nl/nl/agenda/pretty-pissed-24-05-2025/'
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - act_url
+  - info_url

@@ -21,29 +21,27 @@ def _dtrh_crawler(params):
         artists.append({"name": div.attrs["title"], "link": div.attrs["href"]})
     return artists
 
-
-def _check_if_urls_exists(soup, artists):
-    all_urls = []
-    for div in soup.findAll('a'):
-        all_urls.append(div.attrs["href"])
-
-    for pair in artists:
-        new_url = pair["link"]
-        if not new_url in all_urls:
-            print(new_url, "does not exist!")
-
 def _pinkpop_crawler(params):
     soup = _get_soup(params["URL"])
-    artist_tags = soup.find_all('h3')
     artists = []
-    s_artists = [tag.text.strip() for tag in artist_tags]
-    for artist in s_artists:
-        new_url = "https://www.pinkpop.nl/line-up/" + artist.lower().replace(' ', '-') + "/"
-        artists.append({"name": artist, "link": new_url})
-
-    _check_if_urls_exists(soup, artists)
+    for div in soup.findAll("a", {"data-day": ["friday", "saturday", "sunday"]}):
+        artist_name = ' '.join(div.text.strip().split(' ')[:-3]) #remove day from name
+        artists.append({"name": artist_name, "link": div.attrs["href"]})
     return artists
 
+def _ooto_crawler(params):
+    soup = _get_soup(params["URL"])
+    artists = []
+    for div in soup.find_all('h3'):
+        artists.append({"name": div.text.strip(), "link": "~"})
+    return artists
+
+def _prettypissed_crawler(params):
+    soup = _get_soup(params["URL"])
+    artists = []
+    for div in soup.findAll("a", {"class": "styles_page-preview-medium__link__Biqrh"}):
+        artists.append({"name": div.text.strip(), "link": "https://www.melkweg.nl"+div.attrs["href"]})
+    return artists
 
 def _lowlands_crawler(params):
     soup = _get_soup(params["URL"])
@@ -61,7 +59,11 @@ def lineup_crawler(params):
         return _lowlands_crawler(params)
     elif params["FESTIVAL"] == "pinkpop":
         return _pinkpop_crawler(params)
+    elif params["FESTIVAL"] == "ooto":
+        return _ooto_crawler(params)
+    elif params["FESTIVAL"] == "prettypissed":
+        return _prettypissed_crawler(params)
     else:
         exit(
-            f"unknown festival {params['FESTIVAL']}. Currently accepted are: ['DTRH', 'lowlands']"
+            f"unknown festival {params['FESTIVAL']}. Currently accepted are: ['DTRH', 'lowlands', 'pinkpop', 'ooto']"
         )
