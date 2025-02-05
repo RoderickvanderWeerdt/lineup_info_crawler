@@ -1,6 +1,6 @@
 FESTIVAL: "lowlands"
 YEAR: 2025
-PROGRAM_URL: "https://lowlands.nl/acts/"
+URL: "https://lowlands.nl/acts/"
 EXPORT_FORMAT: "csv"
 COLUMNS:
   - name

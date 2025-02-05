@@ -46,10 +46,26 @@ def _prettypissed_crawler(params):
 
 def _lowlands_crawler(params):
     soup = _get_soup(params["URL"])
-
+    urls = []
     artists = []
-    for div in soup.findAll("a", {"class": "group"}):
-        artists.append({"name": div.attrs["title"], "link": div.attrs["href"]})
+    # first collect all the act pages
+    for div in soup.findAll("a", {"class": "act-list-item__button"}):
+        urls.append("https://lowlands.nl"+div.attrs["href"])
+
+    # now get the act names from each url page
+    for url in urls:
+        soup = _get_soup(url)
+        div = soup.find("h1", {"class": "detail-header__heading--large"})
+        if div is None:
+            print(f"Act url not working: {url}")
+            continue
+        name = div.text
+        if name.startswith("black"):
+            print(name)
+        name = name.replace(",",";")
+        if name.startswith("black"):
+            print(name)
+        artists.append({"name": name, "link": url})
     return artists
 
 
