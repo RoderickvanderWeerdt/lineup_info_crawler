@@ -45,7 +45,8 @@ def _export_to_csv(params, all_artist_info):
         if artist["name"] in filled_acts:
             continue
         for col in params["COLUMNS"]:
-            f.write(artist[col])
+
+            f.write(artist[col].replace(",",";"))
             f.write(",")
         f.write("\n")
     f.close()
