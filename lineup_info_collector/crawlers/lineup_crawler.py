@@ -68,12 +68,27 @@ def _lowlands_crawler(params):
         artists.append({"name": name, "link": url})
     return artists
 
+def _get_lowlands_styles(url):
+    soup = _get_soup(url)
+    div = soup.find("h2", {"class": "act-detail__subtitle"})
+    if div is None:
+        print(f"Act url not working: {url}")
+        return ""
+    return div.text.strip()
+
+def _lowlands_crawler2(params):
+    soup = _get_soup(params["URL"])
+    artists = []
+    for div in soup.findAll("a", {"class": "act-list-item__button"}):
+        href = "https://www.lowlands.nl"+div.attrs["href"]
+        artists.append({"name": div.text.strip(), "link": href, "backup_styles": _get_lowlands_styles(href)})
+    return artists
 
 def lineup_crawler(params):
     if params["FESTIVAL"] == "DTRH":
         return _dtrh_crawler(params)
     elif params["FESTIVAL"] == "lowlands":
-        return _lowlands_crawler(params)
+        return _lowlands_crawler2(params)
     elif params["FESTIVAL"] == "pinkpop":
         return _pinkpop_crawler(params)
     elif params["FESTIVAL"] == "ooto":

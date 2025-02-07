@@ -27,6 +27,13 @@ def export_to_googlesheet(params, all_artist_info):
         if artist["name"] not in current_artists:
             sheet.append_row([artist["name"], artist["genre"], artist["styles"]])
 
+def _check_backup_styles(artist):
+    if artist["styles"] == "" or artist["styles"] == ";":
+        try:
+            artist["styles"] = artist["backup_styles"]
+        except:
+            print("INFO:", artist["name"], "misses backup styles, but needs one")
+    return artist
 
 def _export_to_csv(params, all_artist_info):
     file_name = f"{params['FESTIVAL']}_{params['YEAR']}.csv"
@@ -42,6 +49,7 @@ def _export_to_csv(params, all_artist_info):
         f = open(file_name, "w")
 
     for artist in all_artist_info:
+        if params['FESTIVAL']=="lowlands": artist = _check_backup_styles(artist)
         if artist["name"] in filled_acts:
             continue
         for col in params["COLUMNS"]:
