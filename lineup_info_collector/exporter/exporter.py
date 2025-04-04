@@ -50,6 +50,7 @@ def _export_to_csv(params, all_artist_info):
 
     for artist in all_artist_info:
         if params['FESTIVAL']=="lowlands": artist = _check_backup_styles(artist)
+        artist["name"] = artist["name"].replace(",",";")
         if artist["name"] in filled_acts:
             continue
         for col in params["COLUMNS"]:
