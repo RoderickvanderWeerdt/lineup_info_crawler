@@ -14,6 +14,8 @@ def export_to_googlesheet(
                                                 information about an artist.
     """
     raise NotImplementedError
+
+
 def _check_backup_styles(artist):
     if artist["styles"] == "" or artist["styles"] == ";":
         try:
@@ -21,6 +23,7 @@ def _check_backup_styles(artist):
         except:
             print("INFO:", artist["name"], "misses backup styles, but needs one")
     return artist
+
 
 def _export_to_csv(
     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
@@ -53,9 +56,10 @@ def _export_to_csv(
 
         with open(file_name, "a+") as f:
             for artist in all_artist_info:
-                if params['FESTIVAL']=="lowlands": artist = _check_backup_styles(artist)
-        artist["name"] = artist["name"].replace(",",";")
-        if artist.get("name") in filled_acts:
+                if params["FESTIVAL"] == "lowlands":
+                    artist = _check_backup_styles(artist)
+                artist["name"] = artist["name"].replace(",", ";")
+                if artist.get("name") in filled_acts:
                     continue
                 try:
                     row_data: list[str] = []
