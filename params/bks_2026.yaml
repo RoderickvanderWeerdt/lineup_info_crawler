@@ -1,0 +1,12 @@
+FESTIVAL: "BKS"
+YEAR: 2026
+URL: 'https://www.bestkeptsecret.nl/program/list/'
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - day
+  - act_url
+  - info_url
