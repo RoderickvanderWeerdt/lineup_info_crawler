@@ -5,7 +5,7 @@ from unidecode import unidecode
 from lineup_info_collector import constants
 
 
-def _find_info_url(artist: str) -> str | None:
+def _find_info_url(artist: str) -> str:
     """Finds the AllMusic URL for a given artist.
 
     This function searches for an artist on AllMusic and returns the URL to their
@@ -42,7 +42,7 @@ def _find_info_url(artist: str) -> str | None:
             return url[0]
 
     print(f"INFO: No AllMusic URL found for {artist}")
-    return None
+    return ""
 
 
 def _compare_names(line_up_name: str, info_name: str) -> bool:
@@ -59,12 +59,15 @@ def _compare_names(line_up_name: str, info_name: str) -> bool:
         bool: True if the names match after normalization, False otherwise.
     """
     line_up_name = unidecode(line_up_name.lower())
-    info_name = unidecode(info_name.lower()).replace("&", "&")
-    return line_up_name == info_name
+    info_name = unidecode(info_name.lower()).replace("&amp;", "&") #allmusic replaces & with &amp; (and so do LLM's apparently ;p)
+    if line_up_name == info_name:
+        return 1
+    else: #added else in case of unstripped line up name
+        return (' '+info_name.strip()).find(line_up_name) #offset ' ' so that when the line starts with the act name it will return 1 instead of 0
 
 
 def _get_info(
-    act_name: str, info_url: str | None, act_url: str, verbose: bool
+    act_name: str, info_url: str, act_url: str, verbose: bool
 ) -> dict[str, str]:
     """Fetches and parses artist information from an AllMusic URL.
 
@@ -122,7 +125,7 @@ def _get_info(
 
     active_dates_tag = soup.find("div", {"class": "activeDates"})
     active_date = (
-        active_dates_tag.text.strip() if isinstance(active_dates_tag, Tag) else ""
+        active_dates_tag.div.text.strip() if isinstance(active_dates_tag, Tag) else ""
     )
 
     genres_tag = soup.find("div", {"class": "genre"})

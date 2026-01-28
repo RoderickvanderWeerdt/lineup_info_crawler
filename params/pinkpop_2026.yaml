@@ -1,0 +1,12 @@
+FESTIVAL: "pinkpop"
+YEAR: 2026
+URL: 'https://www.pinkpop.nl/programma'
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - day
+  - act_url
+  - info_url

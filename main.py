@@ -62,15 +62,27 @@ def main() -> None:
     lineup to get a list of artists, fetches additional information for
     each artist, and finally exports all the collected data.
     """
-    args: argparse.Namespace = parse_args()
+    
+    # args: argparse.Namespace = parse_args()
 
-    if not args.params:
-        raise ValueError("The --params argument is required.")
+    # if not args.params:
+    #     raise ValueError("The --params argument is required.")
 
-    params: dict = get_params(file=args.params, verbose=args.verbose)
+    # params: dict = get_params(file=args.params, verbose=args.verbose)
+
+    # params = get_params(file="params/lowlands_2025.yaml", verbose=True)
+    # params = get_params(file="params/dtrh_2025.yaml", verbose=True)
+    # params = get_params(file="params/pinkpop_2025.yaml", verbose=False)
+    # params = get_params(file="params/dtrh_2025.yaml", verbose=True)
+    params = get_params(file="params/pinkpop_2026.yaml", verbose=True)
+    # params = get_params(file="params/bks_2026.yaml", verbose=True)
+    # params = get_params(file="params/ooto_2025.yaml", verbose=False)
+    # params = get_params(file="params/prettypissed_2025.yaml", verbose=False)
+    
+
 
     artists: list[dict[str, str]] = lineup_crawler(params)
-    all_artist_info: list[dict[str, str]] = info_crawler(artists, args.verbose)
+    all_artist_info: list[dict[str, str]] = info_crawler(artists, True)
 
     export_data(params, all_artist_info)
 

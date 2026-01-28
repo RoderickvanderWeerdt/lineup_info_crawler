@@ -1,19 +1,19 @@
 import os
 
 
-def export_to_googlesheet(
-    params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
-) -> None:
-    """Exports artist information to a Google Sheet.
+# def export_to_googlesheet(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
+#     """Exports artist information to a Google Sheet.
 
-    Note: This function is not yet implemented.
+#     Note: This function is not yet implemented.
 
-    Args:
-        params (dict[str, str | int | list[str]]): A dictionary of parameters, including Google Sheets details.
-        all_artist_info (list[dict[str, str]]): A list of dictionaries, where each dictionary contains
-                                                information about an artist.
-    """
-    raise NotImplementedError
+#     Args:
+#         params (dict[str, str | int | list[str]]): A dictionary of parameters, including Google Sheets details.
+#         all_artist_info (list[dict[str, str]]): A list of dictionaries, where each dictionary contains
+#                                                 information about an artist.
+#     """
+#     raise NotImplementedError
 
 
 def _check_backup_styles(artist):
@@ -25,9 +25,10 @@ def _check_backup_styles(artist):
     return artist
 
 
-def _export_to_csv(
-    params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
-) -> None:
+# def _export_to_csv(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
+def _export_to_csv(params, all_artist_info):
     """Exports artist information to a CSV file.
 
     The CSV file is named based on the festival and year specified in the parameters.
@@ -56,14 +57,14 @@ def _export_to_csv(
 
         with open(file_name, "a+") as f:
             for artist in all_artist_info:
-                if params["FESTIVAL"] == "lowlands":
+                if params["FESTIVAL"] == "lowlands" or params['FESTIVAL']=="BKS":
                     artist = _check_backup_styles(artist)
                 artist["name"] = artist["name"].replace(",", ";")
                 if artist.get("name") in filled_acts:
                     continue
                 try:
                     row_data: list[str] = []
-                    columns = params.get("COLUMNS", [])
+                    columns = params.get("COLUMNS", []) #are we assuming a different set of columns for each row?
                     if not isinstance(columns, list):
                         print(
                             "Warning: 'COLUMNS' parameter is not a list, skipping row."
@@ -80,9 +81,10 @@ def _export_to_csv(
         raise IOError(f"Error writing to file {file_name}: {e}") from e
 
 
-def export_data(
-    params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
-) -> None:
+# def export_data(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
+def export_data(params, all_artist_info):
     """Exports data to the specified format.
 
     This function acts as a dispatcher, calling the appropriate export function
