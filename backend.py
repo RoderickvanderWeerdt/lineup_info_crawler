@@ -1,0 +1,1 @@
+from .lineup_info_collector.crawlers.lineup_crawler import get_lineup_artists
