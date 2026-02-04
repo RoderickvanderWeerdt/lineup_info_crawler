@@ -124,7 +124,7 @@ def _get_lowlands_styles(url):
 def _lowlands_crawler2(params):
     soup = _get_soup(params["URL"])
     artists = []
-    for div in soup.findAll("a", {"class": "act-list-item__button"}):
+    for div in soup.findAll("a", {"class": "act-list-card__button"}): #changed to 2026 terminology
         href = "https://www.lowlands.nl"+div.attrs["href"]
         artists.append({"name": div.text.strip(), "link": href, "backup_styles": _get_lowlands_styles(href)})
     return artists

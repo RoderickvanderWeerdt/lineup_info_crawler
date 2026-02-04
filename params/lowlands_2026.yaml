@@ -1,0 +1,11 @@
+FESTIVAL: "lowlands"
+YEAR: 2026
+URL: "https://lowlands.nl/acts/"
+EXPORT_FORMAT: "csv"
+COLUMNS:
+  - name
+  - genres
+  - styles
+  - activeDate
+  - act_url
+  - info_url
