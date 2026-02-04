@@ -21,6 +21,29 @@ def _dtrh_crawler(params):
         artists.append({"name": div.attrs["title"], "link": div.attrs["href"]})
     return artists
 
+
+def _pinkpop_crawler_old(params: dict[str, str]) -> list[dict[str, str]]:
+    """Crawls the Pinkpop website for artists.
+
+    Args:
+        params: A dictionary containing the URL of the festival.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents an artist
+        and contains the artist's name, a link to their page, and the day
+        they are performing.
+
+    Raises:
+        ValueError: If no artist elements are found on the page.
+    """
+    soup = _get_soup(params["URL"])
+    artists = []
+    for div in soup.findAll("a", {"data-day": ["friday", "saturday", "sunday"]}):
+        artist_name = div.text.strip()[div.text.strip().find("juni")+len("juni"):] #remove day from name
+        artist_day = div.text.strip().split(' ')[0]
+        artists.append({"name": artist_name, "link": div.attrs["href"], "day": artist_day})
+    return artists
+
 def _pinkpop_crawler(params):
     soup = _get_soup(params["URL"])
     artists = []
@@ -30,7 +53,20 @@ def _pinkpop_crawler(params):
         artists.append({"name": artist_name, "link": div.attrs["href"], "day": artist_day})
     return artists
 
-def _pinkpop_crawler_old(params):
+
+def _ooto_crawler(params: dict[str, str]) -> list[dict[str, str]]:
+    """Crawls the Out of the Ordinary website for artists.
+
+    Args:
+        params: A dictionary containing the URL of the festival.
+
+    Returns:
+        A list of dictionaries, where each dictionary represents an artist
+        and contains the artist's name and a placeholder link.
+
+    Raises:
+        ValueError: If no artist elements are found on the page.
+    """
     soup = _get_soup(params["URL"])
     artists = []
     for div in soup.findAll("a", {"data-day": ["friday", "saturday", "sunday"]}):
@@ -110,6 +146,19 @@ def _bks_crawler(params):
         artists.append({"name": div.figure.div.h3.text.strip(), "link": "https://www.bestkeptsecret.nl"+div.attrs["href"], "day": _str_weekend_dayfinder(div.text.strip()), "backup_styles": div.figure.div.span.text.strip()})
     return artists
 
+
+def _str_weekend_dayfinder(txt):
+    if _str_dayfinder(txt, "Friday"): return "Friday"
+    elif _str_dayfinder(txt, "Saturday"): return "Saturday"
+    elif _str_dayfinder(txt, "Sunday"): return "Sunday"
+
+def _bks_crawler(params):
+    soup = _get_soup(params["URL"])
+    artists = []
+    for div in soup.findAll("a", {"class": "act"}):
+        artists.append({"name": div.figure.div.h3.text.strip(), "link": "https://www.bestkeptsecret.nl"+div.attrs["href"], "day": _str_weekend_dayfinder(div.text.strip()), "backup_styles": div.figure.div.span.text.strip()})
+    return artists
+
 def lineup_crawler(params):
     if params["FESTIVAL"] == "DTRH":
         return _dtrh_crawler(params)
@@ -121,9 +170,9 @@ def lineup_crawler(params):
         return _ooto_crawler(params)
     elif params["FESTIVAL"] == "prettypissed":
         return _prettypissed_crawler(params)
-    elif params["FESTIVAL"] == "BKS":
+    elif festival_name == "BKS":
         return _bks_crawler(params)
-    else:
-        exit(
-            f"unknown festival {params['FESTIVAL']}. Currently accepted are: ['DTRH', 'lowlands', 'pinkpop', 'ooto']"
-        )
+    raise ValueError(
+        f"Unknown festival {festival_name}. "
+        "Currently accepted are: ['DTRH', 'lowlands', 'pinkpop', 'ooto', 'prettypissed']"
+    )

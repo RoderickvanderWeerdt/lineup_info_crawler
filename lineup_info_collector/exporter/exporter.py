@@ -1,31 +1,20 @@
 import os
 
 
-def export_to_googlesheet(params, all_artist_info):
-    raise NotImplementedError
-    # Authenticate and connect to Google Sheets
-    scope = [
-        "https://spreadsheets.google.com/feeds",
-        "https://www.googleapis.com/auth/drive",
-    ]
-    creds = ServiceAccountCredentials.from_json_keyfile_name(
-        "google_credentials.json", scope
-    )
-    client = gspread.authorize(creds)
+# def export_to_googlesheet(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
+#     """Exports artist information to a Google Sheet.
 
-    # Open the spreadsheet and get the first worksheet
-    sheet = client.open(f"{params['FESTIVAL']}_{params['YEAR']}")
+#     Note: This function is not yet implemented.
 
-    # Get current data to avoid duplicates
-    current_data = sheet.get_all_records()
+#     Args:
+#         params (dict[str, str | int | list[str]]): A dictionary of parameters, including Google Sheets details.
+#         all_artist_info (list[dict[str, str]]): A list of dictionaries, where each dictionary contains
+#                                                 information about an artist.
+#     """
+#     raise NotImplementedError
 
-    # Convert current data to a set for quick lookup
-    current_artists = {row["name"] for row in current_data}
-
-    # Update the sheet with new data
-    for artist in artist_data:
-        if artist["name"] not in current_artists:
-            sheet.append_row([artist["name"], artist["genre"], artist["styles"]])
 
 def _check_backup_styles(artist):
     if artist["styles"] == "" or artist["styles"] == ";":
@@ -35,40 +24,88 @@ def _check_backup_styles(artist):
             print("INFO:", artist["name"], "misses backup styles, but needs one")
     return artist
 
+
+# def _export_to_csv(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
 def _export_to_csv(params, all_artist_info):
-    file_name = f"{params['FESTIVAL']}_{params['YEAR']}.csv"
-    filled_acts = []
-    if os.path.exists(file_name):
-        f = open(file_name, "r")
-        for line in f.readlines():
-            cols = line.split(",")
-            filled_acts.append(cols[0])
-        f.close()
-        f = open(file_name, "+a")
-    else:
-        f = open(file_name, "w")
+    """Exports artist information to a CSV file.
 
-    for artist in all_artist_info:
-        if params['FESTIVAL']=="lowlands" or params['FESTIVAL']=="BKS": artist = _check_backup_styles(artist)
-        artist["name"] = artist["name"].replace(",",";")
-        if artist["name"] in filled_acts:
-            continue
-        for col in params["COLUMNS"]:
-            try:
-                f.write(artist[col].replace(",",";"))
-                f.write(",")
-            except:
-                print("found none in category <",col,"> for artist <", artist["name"],">")
-                f.write(",")
-        f.write("\n")
-    f.close()
+    The CSV file is named based on the festival and year specified in the parameters.
+    It appends new artists to the file if it already exists, avoiding duplicate entries.
+
+    Args:
+        params (dict[str, str | int | list[str]]): A dictionary of parameters, including 'FESTIVAL', 'YEAR',
+                                                    and 'COLUMNS'.
+        all_artist_info (list[dict[str, str]]): A list of dictionaries, where each dictionary contains
+                                                information about an artist.
+    """
+    if not all_artist_info:
+        print("No artist information to export.")
+        return
+
+    file_name: str = f"{params.get('FESTIVAL', '')}_{params.get('YEAR', '')}.csv"
+    filled_acts: list[str] = []
+
+    try:
+        if os.path.exists(file_name):
+            with open(file_name, "r") as f:
+                for line in f:
+                    cols = line.strip().split(",")
+                    if cols:
+                        filled_acts.append(cols[0])
+
+        with open(file_name, "a+") as f:
+            for artist in all_artist_info:
+                if params["FESTIVAL"] == "lowlands" or params['FESTIVAL']=="BKS":
+                    artist = _check_backup_styles(artist)
+                artist["name"] = artist["name"].replace(",", ";")
+                if artist.get("name") in filled_acts:
+                    continue
+                try:
+                    row_data: list[str] = []
+                    columns = params.get("COLUMNS", []) #are we assuming a different set of columns for each row?
+                    if not isinstance(columns, list):
+                        print(
+                            "Warning: 'COLUMNS' parameter is not a list, skipping row."
+                        )
+                        continue
+                    for col in columns:
+                        value = artist.get(col, "")
+                        row_data.append(str(value).replace(",", ";"))
+                    f.write(",".join(row_data) + "\n")
+                except KeyError as e:
+                    print(f"Skipping artist due to missing key: {e}")
+
+    except (IOError, PermissionError) as e:
+        raise IOError(f"Error writing to file {file_name}: {e}") from e
 
 
+# def export_data(
+#     params: dict[str, str | int | list[str]], all_artist_info: list[dict[str, str]]
+# ) -> None:
 def export_data(params, all_artist_info):
-    if params["EXPORT_FORMAT"] == "googlesheets":
-        return export_to_googlesheet(params, all_artist_info)
-    elif params["EXPORT_FORMAT"] == "csv":
-        return _export_to_csv(params, all_artist_info)
+    """Exports data to the specified format.
+
+    This function acts as a dispatcher, calling the appropriate export function
+    based on the 'EXPORT_FORMAT' parameter.
+
+    Args:
+        params (dict[str, str | int | list[str]]): A dictionary of parameters, including 'EXPORT_FORMAT'.
+        all_artist_info (list[dict[str, str]]): A list of dictionaries, where each dictionary contains
+                                                information about an artist.
+
+    Raises:
+        ValueError: If the 'EXPORT_FORMAT' is invalid or not specified.
+    """
+    export_format = params.get("EXPORT_FORMAT")
+    if not isinstance(export_format, str):
+        raise ValueError(f"Invalid or missing EXPORT_FORMAT in params: {export_format}")
+
+    if export_format == "googlesheets":
+        export_to_googlesheet(params, all_artist_info)
+    elif export_format == "csv":
+        _export_to_csv(params, all_artist_info)
     else:
         exit(
             f"unknown export format {params['EXPORT_FORMAT']}. Currently accepted are: ['googlesheets', 'csv']"
