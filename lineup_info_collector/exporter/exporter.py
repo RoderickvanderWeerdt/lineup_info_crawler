@@ -107,7 +107,6 @@ def export_data(params, all_artist_info):
     elif export_format == "csv":
         _export_to_csv(params, all_artist_info)
     else:
-        raise ValueError(
-            f"Unknown export format: {export_format}. "
-            "Currently accepted formats are: ['googlesheets', 'csv']"
+        exit(
+            f"unknown export format {params['EXPORT_FORMAT']}. Currently accepted are: ['googlesheets', 'csv']"
         )

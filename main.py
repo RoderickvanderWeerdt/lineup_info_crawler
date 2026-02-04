@@ -8,13 +8,7 @@ from lineup_info_collector.crawlers.lineup_crawler import lineup_crawler
 from lineup_info_collector.exporter.exporter import export_data
 
 
-def parse_args() -> argparse.Namespace:
-    """Parse command-line arguments.
-
-    Returns:
-        argparse.Namespace: An object containing the parsed command-line arguments.
-                            It will have 'params' and 'verbose' attributes.
-    """
+def parse_args():
     parser = argparse.ArgumentParser(
         description="Collect artists and some info into a CSV."
     )
@@ -26,22 +20,9 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def get_params(file: str, verbose: bool) -> dict:
-    """Load parameters from a YAML file.
-
-    Args:
-        file (str): The path to the YAML parameters file.
-        verbose (bool): If True, print the loaded parameters.
-
-    Raises:
-        FileNotFoundError: If the specified file does not exist.
-        ValueError: If there is an error parsing the YAML file.
-
-    Returns:
-        dict: A dictionary containing the parameters from the YAML file.
-    """
+def get_params(file: str, verbose: bool):
     if not os.path.exists(file):
-        raise FileNotFoundError(f"Invalid parameters file: {file}")
+        exit(f"Invalid parameters file {file}.")
 
     with open(file, "r") as f:
         try:

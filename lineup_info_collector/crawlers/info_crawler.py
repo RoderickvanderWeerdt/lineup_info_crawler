@@ -1,5 +1,5 @@
 import requests
-from bs4 import BeautifulSoup, Tag
+from bs4 import BeautifulSoup
 from unidecode import unidecode
 
 from lineup_info_collector import constants
@@ -44,20 +44,23 @@ def _find_info_url(artist: str) -> str:
     print(f"INFO: No AllMusic URL found for {artist}")
     return ""
 
+from lineup_info_collector import constants
 
-def _compare_names(line_up_name: str, info_name: str) -> bool:
-    """Compares two artist names for equality, ignoring case and accents.
 
-    This function normalizes both names by converting them to lowercase and
-    removing any accent marks before comparison.
+def _find_info_url(artist):
+    source_code = requests.get(
+        "https://www.allmusic.com/search/artists/" + artist, headers=constants.HEADERS
+    )
+    plain_text = source_code.text
+    soup = BeautifulSoup(plain_text, features="lxml")
 
-    Args:
-        line_up_name (str): The first artist name (e.g., from a lineup).
-        info_name (str): The second artist name (e.g., from AllMusic).
+    for div in soup.findAll("div", {"class": "artist"}):
+        tag = """<a href="""
+        url = str(div)[str(div).find(tag) + len(tag) + 1 :]
+        url = url[: url.find("""\"""")]
+        return url
 
-    Returns:
-        bool: True if the names match after normalization, False otherwise.
-    """
+def _compare_names(line_up_name, info_name):
     line_up_name = unidecode(line_up_name.lower())
     info_name = unidecode(info_name.lower()).replace("&amp;", "&") #allmusic replaces & with &amp; (and so do LLM's apparently ;p)
     if line_up_name == info_name:
@@ -98,7 +101,6 @@ def _get_info(
             "act_url": act_url,
             "info_url": ";",
         }
-
     try:
         response = requests.get(info_url, headers=constants.HEADERS)
         response.raise_for_status()
@@ -140,12 +142,11 @@ def _get_info(
 
     if verbose:
         print(
-            f"{name:<40} | {active_date:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
+            f"{name:<40} | {activeDate:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
         )
-
     return {
         "name": act_name,
-        "activeDate": active_date,
+        "activeDate": activeDate,
         "genres": ";".join(genres),
         "styles": ";".join(styles),
         "act_url": act_url,
@@ -153,29 +154,9 @@ def _get_info(
     }
 
 
-def info_crawler(artists: list[dict[str, str]], verbose: bool) -> list[dict[str, str]]:
-    """Crawls AllMusic for information about a list of artists.
-
-    For each artist in the list, this function finds their AllMusic page,
-    scrapes relevant information, and returns an updated list of artist
-    dictionaries.
-
-    Args:
-        artists (list[dict[str, str]]): A list of artist dictionaries. Each
-            dictionary should contain at least a "name" and "link" key.
-        verbose (bool): If True, enables detailed logging during the crawling
-            process.
-
-    Returns:
-        list[dict[str, str]]: A list of artist dictionaries, updated with
-            information from AllMusic (activeDate, genres, styles, info_url).
-    """
-    all_info: list[dict[str, str]] = []
+def info_crawler(artists, verbose):
+    all_info = []
     for artist in artists:
-        try:
-            info_url = _find_info_url(artist["name"])
-            artist_info = _get_info(artist["name"], info_url, artist["link"], verbose)
-            all_info.append({**artist, **artist_info})
-        except ConnectionError as e:
-            print(f"ERROR: Could not process {artist['name']}. Reason: {e}")
+        info_url = _find_info_url(artist["name"])
+        all_info.append(artist|_get_info(artist["name"], info_url, artist["link"], verbose))
     return all_info
