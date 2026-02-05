@@ -1,50 +1,48 @@
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag
 from unidecode import unidecode
 
-from lineup_info_collector import constants
+from .. import constants
 
+# def _find_info_url(artist: str) -> str:
+#     """Finds the AllMusic URL for a given artist.
 
-def _find_info_url(artist: str) -> str:
-    """Finds the AllMusic URL for a given artist.
+#     This function searches for an artist on AllMusic and returns the URL to their
+#     main page.
 
-    This function searches for an artist on AllMusic and returns the URL to their
-    main page.
+#     Args:
+#         artist (str): The name of the artist to search for.
 
-    Args:
-        artist (str): The name of the artist to search for.
+#     Returns:
+#         str | None: The AllMusic URL for the artist if found, otherwise None.
 
-    Returns:
-        str | None: The AllMusic URL for the artist if found, otherwise None.
+#     Raises:
+#         ConnectionError: If the HTTP request to AllMusic fails.
+#     """
+#     try:
+#         response = requests.get(
+#             f"https://www.allmusic.com/search/artists/{artist}",
+#             headers=constants.HEADERS,
+#         )
+#         response.raise_for_status()
+#     except requests.exceptions.RequestException as e:
+#         raise ConnectionError(
+#             f"Failed to fetch search results for {artist}: {e}"
+#         ) from e
 
-    Raises:
-        ConnectionError: If the HTTP request to AllMusic fails.
-    """
-    try:
-        response = requests.get(
-            f"https://www.allmusic.com/search/artists/{artist}",
-            headers=constants.HEADERS,
-        )
-        response.raise_for_status()
-    except requests.exceptions.RequestException as e:
-        raise ConnectionError(
-            f"Failed to fetch search results for {artist}: {e}"
-        ) from e
+#     soup = BeautifulSoup(response.text, features="lxml")
+#     artist_div = soup.find("div", {"class": "artist"})
 
-    soup = BeautifulSoup(response.text, features="lxml")
-    artist_div = soup.find("div", {"class": "artist"})
+#     if isinstance(artist_div, Tag) and artist_div.a and "href" in artist_div.a.attrs:
+#         url = artist_div.a["href"]
+#         if isinstance(url, str):
+#             return url
+#         elif isinstance(url, list):
+#             return url[0]
 
-    if isinstance(artist_div, Tag) and artist_div.a and "href" in artist_div.a.attrs:
-        url = artist_div.a["href"]
-        if isinstance(url, str):
-            return url
-        elif isinstance(url, list):
-            return url[0]
+#     print(f"INFO: No AllMusic URL found for {artist}")
+#     return ""
 
-    print(f"INFO: No AllMusic URL found for {artist}")
-    return ""
-
-from lineup_info_collector import constants
 
 
 def _find_info_url(artist):
@@ -142,11 +140,11 @@ def _get_info(
 
     if verbose:
         print(
-            f"{name:<40} | {activeDate:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
+            f"{name:<40} | {active_date:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
         )
     return {
         "name": act_name,
-        "activeDate": activeDate,
+        "activeDate": active_date,
         "genres": ";".join(genres),
         "styles": ";".join(styles),
         "act_url": act_url,
