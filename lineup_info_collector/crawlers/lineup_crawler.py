@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup
 
-from lineup_info_collector import constants
+from .. import constants
 
 
 def _get_soup(url):
