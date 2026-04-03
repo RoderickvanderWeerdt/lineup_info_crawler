@@ -152,6 +152,7 @@ def _bks_crawler(params):
                 "backup_styles": div.figure.div.span.text.strip(),
             }
         )
+    return artists
 
 def lineup_crawler(params):
     if params["FESTIVAL"] == "DTRH":
