@@ -61,10 +61,14 @@ def _find_info_url(artist):
 def _compare_names(line_up_name, info_name):
     line_up_name = unidecode(line_up_name.lower())
     info_name = unidecode(info_name.lower()).replace("&amp;", "&") #allmusic replaces & with &amp; (and so do LLM's apparently ;p)
-    if line_up_name == info_name:
+    info_name = info_name[:info_name.find('(followed')-1]
+    info_name = info_name[:info_name.find('(be one of')-1]
+    print("info_name: '", info_name.strip(), "'")
+    print("line_up_name: '", line_up_name, "'")
+    if line_up_name == info_name.strip():
         return 1
-    else: #added else in case of unstripped line up name
-        return (' '+info_name.strip()).find(line_up_name) #offset ' ' so that when the line starts with the act name it will return 1 instead of 0
+    # else: #added else in case of unstripped line up name ##Removed else because it is too lacks
+    #     return (' '+info_name.strip()).find(line_up_name) #offset ' ' so that when the line starts with the act name it will return 1 instead of 0
 
 
 def _get_info(
@@ -140,7 +144,7 @@ def _get_info(
 
     if verbose:
         print(
-            f"{name:<40} | {active_date:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
+            f"{act_name:<40} | {active_date:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
         )
     return {
         "name": act_name,
