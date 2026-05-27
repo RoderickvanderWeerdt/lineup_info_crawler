@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 
 from .. import constants
+from .utils import extract_streaming_links
 
 
 def _get_soup(url):
@@ -113,20 +114,33 @@ def _lowlands_crawler(params):
         artists.append({"name": name, "link": url})
     return artists
 
-def _get_lowlands_styles(url):
+def _get_lowlands_act_info(url: str) -> dict[str, str]:
+    """Fetches a Lowlands act page and extracts styles and streaming links.
+
+    Args:
+        url: The full URL of the act detail page.
+
+    Returns:
+        A dict with keys ``backup_styles``, ``spotify_url``,
+        ``apple_music_url``, and ``youtube_url``.
+    """
     soup = _get_soup(url)
     div = soup.find("h2", {"class": "act-detail__subtitle"})
     if div is None:
         print(f"Act url not working: {url}")
-        return ""
-    return div.text.strip()
+        backup_styles = ""
+    else:
+        backup_styles = div.text.strip()
+    streaming = extract_streaming_links(soup)
+    return {"backup_styles": backup_styles, **streaming}
+
 
 def _lowlands_crawler2(params):
     soup = _get_soup(params["URL"])
     artists = []
     for div in soup.findAll("a", {"class": "act-list-card__button"}): #changed to 2026 terminology
         href = "https://www.lowlands.nl"+div.attrs["href"]
-        artists.append({"name": div.text.strip(), "link": href, "backup_styles": _get_lowlands_styles(href)})
+        artists.append({"name": div.text.strip(), "link": href, **_get_lowlands_act_info(href)})
     return artists
 
 def _str_dayfinder(txt, day):

@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup, Tag
 from unidecode import unidecode
 
 from .. import constants
+from .utils import extract_streaming_links
 
 # def _find_info_url(artist: str) -> str:
 #     """Finds the AllMusic URL for a given artist.
@@ -71,14 +72,21 @@ def _compare_names(line_up_name, info_name):
     #     return (' '+info_name.strip()).find(line_up_name) #offset ' ' so that when the line starts with the act name it will return 1 instead of 0
 
 
+_EMPTY_STREAMING: dict[str, str] = {
+    "spotify_url": "",
+    "apple_music_url": "",
+    "youtube_url": "",
+}
+
+
 def _get_info(
     act_name: str, info_url: str, act_url: str, verbose: bool
 ) -> dict[str, str]:
     """Fetches and parses artist information from an AllMusic URL.
 
     If a valid AllMusic URL is provided, this function scrapes the page for the
-    artist's active years, genres, and styles. It compares the found name with
-    the act name to ensure correctness.
+    artist's active years, genres, styles, and streaming links. It compares the
+    found name with the act name to ensure correctness.
 
     Args:
         act_name (str): The name of the artist.
@@ -89,7 +97,8 @@ def _get_info(
 
     Returns:
         dict[str, str]: A dictionary containing the artist's information,
-            including name, active dates, genres, styles, and URLs.
+            including name, active dates, genres, styles, streaming URLs, and
+            source URLs.
 
     Raises:
         ConnectionError: If the HTTP request to the AllMusic artist page fails.
@@ -102,6 +111,7 @@ def _get_info(
             "styles": ";",
             "act_url": act_url,
             "info_url": ";",
+            **_EMPTY_STREAMING,
         }
     try:
         response = requests.get(info_url, headers=constants.HEADERS)
@@ -125,6 +135,7 @@ def _get_info(
             "styles": ";",
             "act_url": act_url,
             "info_url": info_url,
+            **_EMPTY_STREAMING,
         }
 
     active_dates_tag = soup.find("div", {"class": "activeDates"})
@@ -142,6 +153,8 @@ def _get_info(
         [a.text for a in styles_tag.findAll("a")] if isinstance(styles_tag, Tag) else []
     )
 
+    streaming = extract_streaming_links(soup)
+
     if verbose:
         print(
             f"{act_name:<40} | {active_date:<13} | {';'.join(genres):<28} |{';'.join(styles)}"
@@ -153,12 +166,36 @@ def _get_info(
         "styles": ";".join(styles),
         "act_url": act_url,
         "info_url": info_url,
+        **streaming,
     }
 
 
-def info_crawler(artists, verbose):
+def info_crawler(artists: list[dict[str, str]], verbose: bool) -> list[dict[str, str]]:
+    """Enriches a list of artists with AllMusic metadata and streaming links.
+
+    For each artist, looks up the AllMusic page to retrieve active dates,
+    genres, styles, and any streaming URLs present on that page. Streaming
+    links already collected by the lineup crawler (e.g. from the festival's
+    own artist pages) are preserved when AllMusic does not have them.
+
+    Args:
+        artists: Artist dicts from the lineup crawler. Each must have a
+            ``name`` key and a ``link`` key.
+        verbose: If True, prints progress for each artist.
+
+    Returns:
+        Merged list of dicts with AllMusic metadata added. Streaming link
+        keys (``spotify_url``, ``apple_music_url``, ``youtube_url``) are
+        always present; empty string means not found.
+    """
     all_info = []
     for artist in artists:
         info_url = _find_info_url(artist["name"])
-        all_info.append(artist|_get_info(artist["name"], info_url, artist["link"], verbose))
+        info = _get_info(artist["name"], info_url, artist.get("link", ""), verbose)
+        merged = artist | info
+        # Prefer any non-empty streaming link: festival pages (lineup crawler)
+        # often have direct Spotify links that AllMusic may lack.
+        for key in ("spotify_url", "apple_music_url", "youtube_url"):
+            merged[key] = info.get(key) or artist.get(key, "")
+        all_info.append(merged)
     return all_info
