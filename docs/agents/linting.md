@@ -9,7 +9,7 @@ uv run ruff check
 uv run ruff format
 ```
 
-`ruff.toml` (`select = ["ALL"]` plus a curated ignore list) is not in the repo yet — it lands in a follow-up PR (see #11). The commands above are the target workflow.
+`ruff.toml` (`select = ["ALL"]` plus a curated ignore list) configures both. Run the commands above before opening a PR; CI does not yet enforce them (see #11).
 
 ## Type checking
 
