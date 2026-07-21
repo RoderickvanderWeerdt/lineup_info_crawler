@@ -118,10 +118,10 @@ ignore = [
   "INP001", # tests/ dirs deliberately have no __init__.py (see pytest layout)
 ]
 
-# We don't wan't ruff formatting or checking in notebooks
+# We don't want ruff formatting or checking in notebooks
 "*.ipynb" = ["ALL"]
 
-# We don't wan't ruff formatting or checking in notebooks
+# Standalone scripts don't need the same rigor as library code
 "**/scripts/**/*.py" = [
   "INP", # It is not a namespace package
   "T201", # Allow printing in scripts
