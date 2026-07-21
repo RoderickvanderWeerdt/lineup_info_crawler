@@ -17,4 +17,4 @@ uv run ruff format
 uv run ty check
 ```
 
-`ty` is not yet a dev dependency — also landing in a follow-up PR, configured to exclude notebooks (`**/*.ipynb`) so `legacy/crawl_AllMusic.ipynb` isn't type-checked.
+`ty` is a dev dependency, configured via `[tool.ty.src]` in `pyproject.toml` to exclude notebooks (`**/*.ipynb`) so `legacy/crawl_AllMusic.ipynb` isn't type-checked.
