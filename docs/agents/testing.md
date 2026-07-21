@@ -1,6 +1,6 @@
 # Testing conventions
 
-Tests run with `pytest`; coverage will be tracked via a coverage plugin. Neither is configured in `pyproject.toml` yet — that lands in a follow-up PR (see #11). No tests exist yet either; this doc pins down the conventions ahead of the first one.
+Tests run with `pytest`; coverage is tracked via `pytest-cov`. `[tool.pytest.ini_options]` and `[tool.coverage.run]` are configured in `pyproject.toml`. No tests exist yet; this doc pins down the conventions ahead of the first one.
 
 ```bash
 uv run pytest
