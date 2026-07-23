@@ -25,7 +25,7 @@ uv add --dev <package>    # dev-only dependency
 - Prefer builtin generics over `typing`: `list`, `dict`, `tuple` instead of `List`, `Dict`, `Tuple`.
 - Use `|` for unions and optionals (`str | int`, `str | None`) instead of `Union`/`Optional`.
 
-Once `ruff.toml` lands (see [linting.md](linting.md)), these are enforced by ruff's `UP` ruleset rather than by convention.
+Enforced by ruff's `UP` ruleset (see [linting.md](linting.md)) rather than by convention alone.
 
 ## See also
 
