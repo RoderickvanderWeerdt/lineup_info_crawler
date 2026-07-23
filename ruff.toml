@@ -1,0 +1,149 @@
+# ---------------------------------------------------------------------------- #
+#                                Global setup                                  #
+# ---------------------------------------------------------------------------- #
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+  ".bzr",
+  ".direnv",
+  ".eggs",
+  ".git",
+  ".git-rewrite",
+  ".hg",
+  ".ipynb_checkpoints",
+  ".mypy_cache",
+  ".nox",
+  ".pants.d",
+  ".pyenv",
+  ".pytest_cache",
+  ".pytype",
+  ".ruff_cache",
+  ".svn",
+  ".tox",
+  ".venv",
+  ".vscode",
+  "__pypackages__",
+  "_build",
+  "buck-out",
+  "build",
+  "dist",
+  "node_modules",
+  "site-packages",
+  "venv",
+]
+
+src = ["."]
+
+indent-width = 4
+line-length = 120
+
+# Assume Python 3.13
+target-version = "py313"
+# ---------------------------------------------------------------------------- #
+#                                  formatting                                  #
+# ---------------------------------------------------------------------------- #
+[format]
+# Notebooks are formatted by default (when no path target is given).
+# Targeting a member path like `ruff format lineup_info_collector` naturally
+# skips notebooks since none live under that path.
+
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = false
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+# ---------------------------------------------------------------------------- #
+#                                   linting                                    #
+# ---------------------------------------------------------------------------- #
+[lint]
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+fixable = ["ALL"]
+select = ["ALL"]
+unfixable = []
+
+# ---------------------------------------------------------------------------- #
+#                                   ignores                                    #
+# ---------------------------------------------------------------------------- #
+
+ignore = [
+  "COM812", # DO NOT REMOVE: will cause errors with the formatter, so must be ignored
+  "C901", # No mccabe complexity analysis
+  "E731", # Allow lambdas
+  "EM101", # Allow string literals directly in raised exceptions
+  "D100", # Allow modules without docstring
+  "D104", # Allow packages without docstring
+  "D415", # Allow first docstring line without terminal punctuation
+  "TD002", # Allow user-less TODOs
+  "TD003", # Allow issue-less TODOs
+  "TRY003", # Allow specifying message in exception
+  "FIX002", # Allow TODO notes
+  "S301", # We want to use pickle files
+  "PLR", # I find all these rules to restrictive. Sometimes code has to be complex or methods have to be longer
+  "TC", # Typechecking blocks are causing issues on function apps with python 3.13, so we will not check for it.
+]
+
+[lint.per-file-ignores]
+"**/tests/**/*.py" = [
+  "S101", # asserts allowed in tests...
+  "ARG", # Unused function args -> fixtures nevertheless are functionally relevant...
+  "FBT", # Don't care about booleans as positional arguments in tests, e.g. via @pytest.mark.parametrize()
+  "PLR2004", # Magic value used in comparison
+  "ANN001", # ignore annotation for function arguments,
+  "ANN201", # ignore missing return type for test_...() function
+  "PT011", # allow catch broad exception, e.g. catch(ValueError)
+  "D103", # Less strict on making docstrings required for test functions
+  "D104", # Less strict on making docstrings required for test packages
+  "INP001", # tests/ dirs deliberately have no __init__.py (see pytest layout)
+]
+
+# We don't want ruff formatting or checking in notebooks
+"*.ipynb" = ["ALL"]
+
+# Standalone scripts don't need the same rigor as library code
+"**/scripts/**/*.py" = [
+  "INP", # It is not a namespace package
+  "T201", # Allow printing in scripts
+  "S603", # Our scripts need to run subprocesses
+]
+
+# ---------------------------------------------------------------------------- #
+#                                other linting                                 #
+# ---------------------------------------------------------------------------- #
+
+[lint.mccabe]
+# Max complexity before triggering C901
+max-complexity = 10
+
+[lint.pycodestyle]
+max-doc-length = 120
+
+[lint.pydocstyle]
+convention = "google"
+
+[lint.isort]
+combine-as-imports = true
+force-single-line = false
+force-sort-within-sections = true
+split-on-trailing-comma = false
