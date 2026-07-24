@@ -4,7 +4,8 @@ on:
   pull_request:
 
 jobs:
-  checks:
+  ruff-check:
+    name: Ruff check
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
@@ -14,6 +15,7 @@ jobs:
         uses: astral-sh/setup-uv@v5
         with:
           python-version: "3.13"
+          enable-cache: true
 
       - name: Install dependencies
         run: uv sync
@@ -21,11 +23,59 @@ jobs:
       - name: Ruff check
         run: uv run ruff check
 
+  ruff-format:
+    name: Ruff format check
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
       - name: Ruff format check
         run: uv run ruff format --check
 
+  ty-check:
+    name: Type check (ty)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
+
       - name: Type check (ty)
         run: uv run ty check
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install uv
+        uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.13"
+          enable-cache: true
+
+      - name: Install dependencies
+        run: uv sync
 
       - name: Test
         # No tests exist yet (pytest-scaffolding, #27, deliberately shipped without any).
