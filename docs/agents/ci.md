@@ -19,4 +19,8 @@ Hook versions are pinned in `.pre-commit-config.yaml`; bump them with `uvx pre-c
 
 ## CI
 
-The GitHub Actions workflow runs on every pull request: `ruff check`, `ruff format --check`, `ty check`, `pytest`. It mirrors the same commands documented in [linting.md](linting.md) and [testing.md](testing.md) — nothing CI-specific to configure beyond what those already require locally, once `ruff.toml` (#13) and `ty` (#14) have landed. Until then, the `ty check` and `ruff check` steps fail on every PR — expected, not a workflow bug (see #11).
+The GitHub Actions workflow runs on every pull request: `ruff check`, `ruff format --check`, `ty check`, `pytest`. It mirrors the same commands documented in [linting.md](linting.md) and [testing.md](testing.md) — nothing CI-specific to configure beyond what those already require locally.
+
+The `ruff check` and `ty check` steps currently fail on every PR regardless of what it touches, because they lint the whole repo and pre-existing violations haven't been remediated yet — see [linting.md](linting.md) and [lineup_info_crawler#5](https://github.com/RoderickvanderWeerdt/lineup_info_crawler/issues/5). Expected, not a workflow bug.
+
+The `Test` step treats pytest's exit code 5 ("no tests collected") as passing, since no tests exist yet — any other nonzero exit code still fails the build.

@@ -28,4 +28,12 @@ jobs:
         run: uv run ty check
 
       - name: Test
-        run: uv run pytest
+        # No tests exist yet (pytest-scaffolding, #27, deliberately shipped without any).
+        # pytest exits 5 ("no tests collected") in that case; treat that as success but
+        # still fail on any other nonzero exit code once real tests land.
+        run: |
+          uv run pytest
+          code=$?
+          if [ "$code" -ne 0 ] && [ "$code" -ne 5 ]; then
+            exit "$code"
+          fi

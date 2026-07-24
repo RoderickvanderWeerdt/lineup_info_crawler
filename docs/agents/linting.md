@@ -9,7 +9,9 @@ uv run ruff check
 uv run ruff format
 ```
 
-`ruff.toml` (`select = ["ALL"]` plus a curated ignore list) configures both. Run the commands above before opening a PR; CI does not yet enforce them (see #11).
+`ruff.toml` (`select = ["ALL"]` plus a curated ignore list) configures both. Run the commands above before opening a PR; CI enforces both on every pull request (see [ci.md](ci.md)).
+
+`ruff check`/`ty check` currently fail against pre-existing violations in four files, predating the strict config — that remediation approach is still undecided (see [lineup_info_crawler#5](https://github.com/RoderickvanderWeerdt/lineup_info_crawler/issues/5)), so CI showing red there isn't a sign anything is misconfigured.
 
 ## Type checking
 
