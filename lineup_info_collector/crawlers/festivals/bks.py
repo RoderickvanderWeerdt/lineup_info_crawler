@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup, Tag
+
 from ...params import CrawlParams
 from ..utils import _get_soup
 from .registry import COLUMNS_WITH_DAY, register
@@ -21,6 +23,25 @@ def _str_weekend_dayfinder(txt: str) -> str | None:
     return None
 
 
+def parse_bks(soup: BeautifulSoup) -> list[dict]:
+    """Parse Best Kept Secret's lineup page HTML for artists."""
+    artists = []
+    for div in soup.find_all("a", attrs={"class": "act"}):
+        name_tag = div.find("h3")
+        name = name_tag.text.strip() if isinstance(name_tag, Tag) else ""
+        styles_tag = div.find("span")
+        backup_styles = styles_tag.text.strip() if isinstance(styles_tag, Tag) else ""
+        artists.append(
+            {
+                "name": name,
+                "link": "https://www.bestkeptsecret.nl" + str(div.attrs["href"]),
+                "day": _str_weekend_dayfinder(div.text.strip()),
+                "backup_styles": backup_styles,
+            }
+        )
+    return artists
+
+
 @register(
     "bks",
     default_url="https://www.bestkeptsecret.nl/program/list/",
@@ -28,15 +49,4 @@ def _str_weekend_dayfinder(txt: str) -> str | None:
 )
 def crawl(params: CrawlParams) -> list[dict]:
     """Crawl Best Kept Secret's lineup page for artists."""
-    soup = _get_soup(params.url)
-    artists = []
-    for div in soup.find_all("a", attrs={"class": "act"}):
-        artists.append(
-            {
-                "name": div.figure.div.h3.text.strip(),
-                "link": "https://www.bestkeptsecret.nl" + div.attrs["href"],
-                "day": _str_weekend_dayfinder(div.text.strip()),
-                "backup_styles": div.figure.div.span.text.strip(),
-            }
-        )
-    return artists
+    return parse_bks(_get_soup(params.url))
