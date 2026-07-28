@@ -41,7 +41,7 @@ def _export_to_csv(params: CrawlParams, all_artist_info: list[dict], columns: li
 
         with open(file_name, "a+") as f:
             for artist in all_artist_info:
-                if params.festival.lower() in ("lowlands", "bks"):
+                if params.festival in ("lowlands", "bks"):
                     artist = _check_backup_styles(artist)
                 artist["name"] = artist["name"].replace(",", ";")
                 if artist.get("name") in filled_acts:
