@@ -1,71 +1,35 @@
 import argparse
-import os
 
-import yaml
-
+from lineup_info_collector.crawlers.festivals import get_default_columns, get_default_url
 from lineup_info_collector.crawlers.info_crawler import info_crawler
 from lineup_info_collector.crawlers.lineup_crawler import lineup_crawler
 from lineup_info_collector.exporter.exporter import export_data
+from lineup_info_collector.params import CrawlParams
 
 
-def parse_args():
-    parser = argparse.ArgumentParser(
-        description="Collect artists and some info into a CSV."
-    )
-    parser.add_argument("-p", "--params", type=str, help="path to the parameters file.")
-    parser.add_argument(
-        "-v", "--verbose", action="store_true", help="if set, print verbose."
-    )
-    args = parser.parse_args()
-    return args
-
-
-def get_params(file: str, verbose: bool):
-    if not os.path.exists(file):
-        exit(f"Invalid parameters file {file}.")
-
-    with open(file, "r") as f:
-        try:
-            params: dict = yaml.safe_load(f)
-            if verbose:
-                print(f"Parameters from file {file}")
-                print(params)
-            return params
-        except yaml.YAMLError as e:
-            raise ValueError(f"Error parsing YAML file: {file}") from e
+def parse_args() -> argparse.Namespace:
+    """Parse the festival/year/url/verbose CLI arguments."""
+    parser = argparse.ArgumentParser(description="Collect artists and some info into a CSV.")
+    parser.add_argument("-f", "--festival", required=True, help="festival key to crawl, e.g. 'lowlands'.")
+    parser.add_argument("-y", "--year", required=True, type=int, help="festival edition year.")
+    parser.add_argument("-u", "--url", help="override the festival's default lineup URL.")
+    parser.add_argument("-v", "--verbose", action="store_true", help="if set, print verbose.")
+    return parser.parse_args()
 
 
 def main() -> None:
-    """Main function to run the data collection and export process.
-
-    This function orchestrates the entire process. It parses command-line
-    arguments to get the parameters file, loads the parameters, crawls the
-    lineup to get a list of artists, fetches additional information for
-    each artist, and finally exports all the collected data.
-    """
-    
-    # args: argparse.Namespace = parse_args()
-
-    # if not args.params:
-    #     raise ValueError("The --params argument is required.")
-
-    # params: dict = get_params(file=args.params, verbose=args.verbose)
-
-    # params = get_params(file="params/lowlands_2025.yaml", verbose=True)
-    # params = get_params(file="params/dtrh_2025.yaml", verbose=True)
-    # params = get_params(file="params/pinkpop_2025.yaml", verbose=False)
-    # params = get_params(file="params/dtrh_2025.yaml", verbose=True)
-    params = get_params(file="params/pinkpop_2026.yaml", verbose=True)
-    # params = get_params(file="params/bks_2026.yaml", verbose=True)
-    # params = get_params(file="params/ooto_2025.yaml", verbose=False)
-    # params = get_params(file="params/prettypissed_2025.yaml", verbose=False)
-    
-
+    """Crawl a festival's lineup, enrich it with AllMusic info, and export it to CSV."""
+    args = parse_args()
+    params = CrawlParams(
+        festival=args.festival,
+        year=args.year,
+        url=args.url or get_default_url(args.festival),
+    )
 
     artists: list[dict[str, str]] = lineup_crawler(params)
-    all_artist_info: list[dict[str, str]] = info_crawler(artists, True)
+    all_artist_info: list[dict[str, str]] = info_crawler(artists, args.verbose)
 
-    export_data(params, all_artist_info)
+    export_data(params, all_artist_info, get_default_columns(params.festival))
 
 
 if __name__ == "__main__":

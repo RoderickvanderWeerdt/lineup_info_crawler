@@ -6,9 +6,8 @@
 
 ## Repository shape
 
-- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`).
+- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`, `params.py`).
 - `main.py`: CLI entry point.
-- `params/`: per-festival YAML configs.
 - `legacy/`: pre-refactor notebook and CSV exports, kept for reference.
 
 ## Documentation routing

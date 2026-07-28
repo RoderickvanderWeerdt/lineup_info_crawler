@@ -1,3 +1,4 @@
+from ...params import CrawlParams
 from ..utils import _get_soup
 from .registry import register
 
@@ -12,10 +13,10 @@ def _get_lowlands_styles(url: str) -> str:
     return div.text.strip()
 
 
-@register("lowlands")
-def crawl(params: dict) -> list[dict]:
+@register("lowlands", default_url="https://lowlands.nl/acts/")
+def crawl(params: CrawlParams) -> list[dict]:
     """Crawl Lowlands' lineup page for artists."""
-    soup = _get_soup(params["URL"])
+    soup = _get_soup(params.url)
     artists = []
     for div in soup.find_all("a", attrs={"class": "act-list-card__button"}):  # changed to 2026 terminology
         href = "https://www.lowlands.nl" + div.attrs["href"]

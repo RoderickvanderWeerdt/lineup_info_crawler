@@ -6,10 +6,10 @@ Requires Python 3.13 (see `pyproject.toml`). Managed with `uv`. Flat, single-pac
 
 ```bash
 uv sync
-uv run python main.py
+uv run python main.py --festival lowlands --year 2026
 ```
 
-`main.py` accepts `-p`/`--params` (path to a `params/<festival>.yaml` config) and `-v`/`--verbose`, but CLI parsing is currently commented out in `main()` — it runs whichever `params/` file is hardcoded in the `get_params(...)` call. Edit that call to target a different festival config.
+`main.py` takes `-f`/`--festival`, `-y`/`--year`, an optional `-u`/`--url` (overrides the festival's registered default), and `-v`/`--verbose`. Crawl parameters flow through the codebase as a frozen `CrawlParams` dataclass (`lineup_info_collector/params.py`), not a dict — see ADR-0001 (`docs/adr/0001-crawl-params-shape-and-source.md`, landing via #32).
 
 ## Dependency management
 
