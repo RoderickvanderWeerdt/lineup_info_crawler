@@ -1,15 +1,7 @@
 import os
 
+from lineup_info_collector.artist_shape import _check_backup_styles
 from lineup_info_collector.params import CrawlParams
-
-
-def _check_backup_styles(artist):
-    if artist["styles"] == "" or artist["styles"] == ";":
-        try:
-            artist["styles"] = artist["backup_styles"]
-        except:
-            print("INFO:", artist["name"], "misses backup styles, but needs one")
-    return artist
 
 
 def _export_to_csv(params: CrawlParams, all_artist_info: list[dict], columns: list[str]) -> None:
@@ -41,8 +33,9 @@ def _export_to_csv(params: CrawlParams, all_artist_info: list[dict], columns: li
 
         with open(file_name, "a+") as f:
             for artist in all_artist_info:
-                if params.festival in ("lowlands", "bks"):
-                    artist = _check_backup_styles(artist)
+                # Idempotent: crawl_lineup_info() already applies this fallback, but
+                # export_data() shouldn't assume every caller went through it first.
+                artist = _check_backup_styles(artist)
                 artist["name"] = artist["name"].replace(",", ";")
                 if artist.get("name") in filled_acts:
                     continue

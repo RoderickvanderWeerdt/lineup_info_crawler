@@ -1,4 +1,4 @@
-from lineup_info_collector.exporter.exporter import _check_backup_styles
+from lineup_info_collector.artist_shape import _check_backup_styles
 
 
 def test_check_backup_styles_fills_empty_styles():
