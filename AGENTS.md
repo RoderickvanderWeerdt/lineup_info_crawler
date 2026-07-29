@@ -9,7 +9,6 @@
 - `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`).
 - `main.py`: CLI entry point.
 - `params/`: per-festival YAML configs.
-- `legacy/`: pre-refactor notebook and CSV exports, kept for reference.
 
 ## Documentation routing
 
