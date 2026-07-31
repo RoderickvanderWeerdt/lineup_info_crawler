@@ -9,3 +9,6 @@ COLUMNS:
   - activeDate
   - act_url
   - info_url
+  - spotify_url
+  - apple_music_url
+  - youtube_url
