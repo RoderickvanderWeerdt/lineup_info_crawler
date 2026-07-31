@@ -1,3 +1,9 @@
 
 .DS_Store
 *.pyc
+
+# Credentials — never track these
+google_credentials.json
+*credentials*.json
+*.pem
+*.key
