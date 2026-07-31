@@ -6,7 +6,14 @@ _REGISTRY: dict[str, CrawlFn] = {}
 
 
 def register(key: str) -> Callable[[CrawlFn], CrawlFn]:
-    """Register a festival's `crawl(params)` function under `key`."""
+    """Register a festival's `crawl(params)` function under `key`.
+
+    Args:
+        key: The festival's dispatch key, as used in `params["FESTIVAL"]`.
+
+    Returns:
+        A decorator that registers the wrapped function and returns it unchanged.
+    """
 
     def decorator(fn: CrawlFn) -> CrawlFn:
         _REGISTRY[key] = fn
@@ -16,7 +23,17 @@ def register(key: str) -> Callable[[CrawlFn], CrawlFn]:
 
 
 def get_crawler(festival: str) -> CrawlFn:
-    """Look up the registered crawl function for `festival`."""
+    """Look up the registered crawl function for a festival.
+
+    Args:
+        festival: The festival's dispatch key, as used in `params["FESTIVAL"]`.
+
+    Returns:
+        The festival's `crawl(params)` function.
+
+    Raises:
+        ValueError: If no crawler is registered under `festival`.
+    """
     try:
         return _REGISTRY[festival]
     except KeyError:

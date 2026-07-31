@@ -1,10 +1,17 @@
-from ..utils import _get_soup
-from .registry import register
+from lineup_info_collector.crawlers.festivals.registry import register
+from lineup_info_collector.crawlers.utils import _get_soup
 
 
 @register("pinkpop")
 def crawl(params: dict) -> list[dict]:
-    """Crawl Pinkpop's lineup page for artists."""
+    """Crawl Pinkpop's lineup page for artists.
+
+    Args:
+        params: Crawl parameters; must include `"URL"`.
+
+    Returns:
+        A list of artist dicts with `name`, `link`, and `day` keys.
+    """
     soup = _get_soup(params["URL"])
     artists = []
     for div in soup.find_all("a", attrs={"data-day": ["friday", "saturday", "sunday"]}):

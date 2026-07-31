@@ -1,4 +1,4 @@
-from .festivals import get_crawler
+from lineup_info_collector.crawlers.festivals import get_crawler
 
 
 def lineup_crawler(params: dict) -> list[dict]:
