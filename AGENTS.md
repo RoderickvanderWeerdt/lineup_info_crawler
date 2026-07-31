@@ -6,10 +6,9 @@
 
 ## Repository shape
 
-- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`).
+- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`, `params.py`).
 - `main.py`: CLI entry point.
 - `params/`: per-festival YAML configs.
-- `legacy/`: pre-refactor notebook and CSV exports, kept for reference.
 
 ## Documentation routing
 
@@ -18,6 +17,7 @@
 - [docs/agents/linting.md](docs/agents/linting.md) — running `ruff` and `ty` locally.
 - [docs/agents/testing.md](docs/agents/testing.md) — pytest conventions.
 - [docs/agents/git.md](docs/agents/git.md) — commit conventions, PR-splitting norms, AI-assisted-PR norm.
+- [docs/agents/ci.md](docs/agents/ci.md) — pre-commit hooks, GitHub Actions CI.
 
 ## Quality bar
 

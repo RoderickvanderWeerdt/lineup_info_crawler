@@ -1,5 +1,6 @@
+from ...params import CrawlParams
 from ..utils import _get_soup
-from .registry import register
+from .registry import COLUMNS_WITH_DAY, register
 
 
 def _str_dayfinder(txt: str, day: str) -> str | int:
@@ -20,10 +21,14 @@ def _str_weekend_dayfinder(txt: str) -> str | None:
     return None
 
 
-@register("BKS")
-def crawl(params: dict) -> list[dict]:
+@register(
+    "bks",
+    default_url="https://www.bestkeptsecret.nl/program/list/",
+    default_columns=COLUMNS_WITH_DAY,
+)
+def crawl(params: CrawlParams) -> list[dict]:
     """Crawl Best Kept Secret's lineup page for artists."""
-    soup = _get_soup(params["URL"])
+    soup = _get_soup(params.url)
     artists = []
     for div in soup.find_all("a", attrs={"class": "act"}):
         artists.append(
