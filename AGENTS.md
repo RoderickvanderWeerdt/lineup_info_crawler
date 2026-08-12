@@ -6,7 +6,7 @@
 
 ## Repository shape
 
-- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`, `params.py`).
+- `lineup_info_collector/`: crawler and enrichment library code (`crawlers/`, `exporter/`, `params.py`, `artist_shape.py`).
 - `main.py`: CLI entry point.
 - `params/`: per-festival YAML configs.
 
