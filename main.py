@@ -1,8 +1,7 @@
 import argparse
 
+from lineup_info_collector import crawl_lineup_info
 from lineup_info_collector.crawlers.festivals import get_default_columns, get_default_url
-from lineup_info_collector.crawlers.info_crawler import info_crawler
-from lineup_info_collector.crawlers.lineup_crawler import lineup_crawler
 from lineup_info_collector.exporter.exporter import export_data
 from lineup_info_collector.params import CrawlParams
 
@@ -26,8 +25,7 @@ def main() -> None:
         url=args.url or get_default_url(args.festival),
     )
 
-    artists: list[dict[str, str]] = lineup_crawler(params)
-    all_artist_info: list[dict[str, str]] = info_crawler(artists, args.verbose)
+    all_artist_info: list[dict[str, str]] = crawl_lineup_info(params, verbose=args.verbose)
 
     export_data(params, all_artist_info, get_default_columns(params.festival))
 
